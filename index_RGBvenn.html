@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加法混色デモ</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+        .left-panel {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        /* ベン図のサイズ指定 */
+        .venn-diagram {
+            width: 250px;
+            height: 250px;
+        }
+        /* 混色結果を表示する■ */
+        .color-box {
+            width: 150px;
+            height: 150px;
+            background-color: rgb(255, 255, 255);
+            border: 2px solid #fff;
+        }
+        .right-panel {
+            width: 300px;
+        }
+        .slider-group {
+            margin-bottom: 20px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        
+        /* 確実にブレンドを機能させるための設定 */
+        .blend-container {
+            isolation: isolate;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-panel">
+        <div class="venn-diagram">
+            <svg viewBox="0 0 300 300" width="100%" height="100%">
+                <rect width="300" height="300" fill="#000" />
+                <g class="blend-container" style="mix-blend-mode: screen;">
+                    <circle id="vennRed" cx="150" cy="110" r="75" fill="rgb(255,0,0)" style="mix-blend-mode: screen;" />
+                    <circle id="vennGreen" cx="105" cy="190" r="75" fill="rgb(0,255,0)" style="mix-blend-mode: screen;" />
+                    <circle id="vennBlue" cx="195" cy="190" r="75" fill="rgb(0,0,255)" style="mix-blend-mode: screen;" />
+                </g>
+            </svg>
+        </div>
+
+        <div>3色を混ぜた単色</div>
+        <div id="colorBox" class="color-box"></div>
+    </div>
+
+    <div class="right-panel">
+        <h3>加法混色</h3>
+        <p>色光の3原色（RGB）を混ぜ合わせることで、様々な色を作ることができます。</p>
+        
+        <div class="slider-group">
+            <div class="slider-label">
+                <span style="color: #ff4d4d;">■ Red</span>
+                <span id="redVal">255</span>
+            </div>
+            <input type="range" id="redRange" min="0" max="255" value="255">
+        </div>
+
+        <div class="slider-group">
+            <div class="slider-label">
+                <span style="color: #4dff4d;">■ Green</span>
+                <span id="greenVal">255</span>
+            </div>
+            <input type="range" id="greenRange" min="0" max="255" value="255">
+        </div>
+
+        <div class="slider-group">
+            <div class="slider-label">
+                <span style="color: #4d4dff;">■ Blue</span>
+                <span id="blueVal">255</span>
+            </div>
+            <input type="range" id="blueRange" min="0" max="255" value="255">
+        </div>
+    </div>
+</div>
+
+<script>
+    // 要素の取得
+    const redRange = document.getElementById('redRange');
+    const greenRange = document.getElementById('greenRange');
+    const blueRange = document.getElementById('blueRange');
+    
+    const redVal = document.getElementById('redVal');
+    const greenVal = document.getElementById('greenVal');
+    const blueVal = document.getElementById('blueVal');
+    
+    const colorBox = document.getElementById('colorBox');
+
+    // ベン図の各円の要素を取得
+    const vennRed = document.getElementById('vennRed');
+    const vennGreen = document.getElementById('vennGreen');
+    const vennBlue = document.getElementById('vennBlue');
+
+    // 色を更新する関数
+    function updateColor() {
+        const r = redRange.value;
+        const g = greenRange.value;
+        const b = blueRange.value;
+
+        // 数値テキストの更新
+        redVal.textContent = r;
+        greenVal.textContent = g;
+        blueVal.textContent = b;
+
+        // ■ の背景色をRGB値で更新
+        colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+
+        // ベン図の円の色をスライダーに同期
+        vennRed.setAttribute('fill', `rgb(${r}, 0, 0)`);
+        vennGreen.setAttribute('fill', `rgb(0, ${g}, 0)`);
+        vennBlue.setAttribute('fill', `rgb(0, 0, ${b})`);
+    }
+
+    // スライダーを動かした時のイベントリスナー
+    redRange.addEventListener('input', updateColor);
+    greenRange.addEventListener('input', updateColor);
+    blueRange.addEventListener('input', updateColor);
+
+    // 初期実行
+    updateColor();
+</script>
+
+</body>
+</html>
